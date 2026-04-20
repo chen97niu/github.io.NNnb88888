@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NN公益生存服</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 登录 */
+        #loginModal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .loginBox {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+        .loginBox input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .loginBox button {
+            padding: 12px 30px;
+            font-size: 16px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* 主页 */
+        #home {
+            padding: 60px 20px 120px;
+            text-align: center;
+            display: none;
+        }
+        .title {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .title span {
+            color: red;
+        }
+        .info {
+            font-size: 16px;
+            margin: 4px 0;
+        }
+        .smallInfo {
+            font-size: 12px;
+            color: #333;
+            margin: 2px 0;
+        }
+        .redText {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* 按钮 */
+        .mainBtn {
+            display: block;
+            width: 85%;
+            margin: 15px auto;
+            padding: 15px;
+            font-size: 17px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: #f5f5f5;
+            cursor: pointer;
+        }
+        .subBtn {
+            padding: 12px 20px;
+            margin: 8px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* 右上角用户 */
+        .userBtn {
+            position: fixed;
+            top: 15px; right: 15px;
+            background: red;
+            color: #fff;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            z-index: 99;
+            cursor: pointer;
+        }
+
+        /* 设置栏 */
+        .settingBar {
+            position: fixed;
+            top: 65px; right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 99;
+        }
+        .settingBar button {
+            padding: 8px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        /* 弹窗 */
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modalContent {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            position: relative;
+        }
+        .close {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        .svip {
+            color: goldenrod;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        /* 恐龙 */
+        .dinoBox {
+            width: 100%;
+            height: 60px;
+            border-top: 2px solid #000;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        #dino {
+            width: 30px;
+            height: 30px;
+            background: #000;
+            position: absolute;
+            bottom: 0;
+            left: 40px;
+            border-radius: 4px;
+        }
+        .obs {
+            width: 10px;
+            height: 30px;
+            background: #000;
+            position: absolute;
+            bottom: 0;
+        }
+
+        /* 雪花 */
+        .snow {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .flake {
+            position: absolute;
+            background: #000;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 登录 -->
+<div id="loginModal">
+    <div class="loginBox">
+        <h3>登录</h3>
+        <input type="text" id="user" value="NNGY" placeholder="用户名">
+        <input type="password" id="pwd" value="88888" placeholder="密码">
+        <button onclick="login()">确定</button>
+    </div>
+</div>
+
+<!-- 雪花 -->
+<div class="snow" id="snow"></div>
+
+<!-- 用户按钮 -->
+<button class="userBtn" onclick="openModal('userModal')">用户</button>
+
+<!-- 设置 -->
+<div class="settingBar">
+    <button onclick="openModal('settingModal')">设置</button>
+</div>
+
+<!-- 主页 -->
+<div id="home">
+    <div class="title">欢迎来到<span>NN</span>公益生存服</div>
+    <div class="info">QQ群：337201303</div>
+    <div class="info">联系：3198923218@qq.com</div>
+    <div class="smallInfo">官网版本 <span class="redText">0.2x</span></div>
+    <div class="smallInfo">静态网址 请勿模仿 未连接服务器 抄袭必究</div>
+    <div class="smallInfo redText">打压所有同行服务器 别拿主播服来比</div>
+
+    <button class="mainBtn" onclick="openModal('downloadModal')">版本下载</button>
+    <button class="mainBtn" onclick="openModal('serverModal')">服务器</button>
+    <button class="mainBtn" onclick="openModal('ruleModal')">服务器规则</button>
+    <button class="mainBtn" onclick="openModal('donateModal')">服务器捐赠</button>
+
+    <!-- 恐龙 -->
+    <div class="dinoBox">
+        <div id="dino"></div>
+    </div>
+</div>
+
+<!-- 用户弹窗 -->
+<div class="modal" id="userModal">
+    <div class="modalContent">
+        <span class="close" onclick="closeAll()">&times;</span>
+        <div class="svip">服务器SVIP会员</div>
+    </div>
+</div>
+
+<!-- 下载弹窗 -->
+<div class="modal" id="downloadModal">
+    <div class="modalContent">
+        <span class="close" onclick="closeAll()">&times;</span>
+        <h3>选择版本</h3>
+        <button class="subBtn" onclick="window.open('https://www.123912.com/s/2XZfTd-5vcAv','_blank')">最新版本</button>
+        <button class="subBtn" onclick="window.open('https://www.123912.com/s/2XZfTd-LvcAv','_blank')">古老版本</button>
+    </div>
+</div>
+
+<!-- 服务器弹窗 -->
+<div class="modal" id="serverModal">
+    <div class="modalContent">
+        <span class="close" onclick="closeAll()">&times;</span>
+        <p>服务器名称：公益无规则生存</p>
+        <p>端口：9666.fun</p>
+        <p>IP：39256</p>
+    </div>
+</div>
+
+<!-- 规则弹窗 -->
+<div class="modal" id="ruleModal">
+    <div class="modalContent">
+        <span class="close" onclick="closeAll()">&times;</span>
+        <p>服务器已从无规则变成养老生存</p>
+        <p>禁止炸服</p>
+        <p>禁止辱骂他人</p>
+        <p>禁止熊孩子</p>
+    </div>
+</div>
+
+<!-- 捐赠弹窗 -->
+<div class="modal" id="donateModal">
+    <div class="modalContent">
+        <span class="close" onclick="closeAll()">&times;</span>
+        <p>感谢捐赠我将全部投入服务器日常维护</p>
+        <p>拿出10%捐赠来做慈善公益</p>
+        <br>
+        <button class="subBtn" onclick="showImg('wechat.jpg')">微信捐赠</button>
+        <button class="subBtn" onclick="showImg('alipay.jpg')">支付宝捐赠</button>
+    </div>
+</div>
+
+<!-- 设置弹窗 -->
+<div class="modal" id="settingModal">
+    <div class="modalContent">
+        <span class="close" onclick="closeAll()">&times;</span>
+        <h4>雪花大小</h4>
+        <button onclick="setSnow(3)">大</button>
+        <button onclick="setSnow(2)">中</button>
+        <button onclick="setSnow(1)">小</button>
+        <br><br>
+        <h4>跳跃速度</h4>
+        <button onclick="setSpeed(1)">快</button>
+        <button onclick="setSpeed(2)">中</button>
+        <button onclick="setSpeed(3)">慢</button>
+    </div>
+</div>
+
+<!-- 图片弹窗 -->
+<div class="modal" id="imgModal">
+    <div class="modalContent">
+        <span class="close" onclick="closeAll()">&times;</span>
+        <img id="showPic" style="width:100%" src="">
+    </div>
+</div>
+
+<script>
+// 登录
+function login() {
+    let u = document.getElementById('user').value.trim();
+    let p = document.getElementById('pwd').value.trim();
+    if (u === "NNGY" && p === "88888") {
+        document.getElementById('loginModal').style.display = "none";
+        document.getElementById('home').style.display = "block";
+        startSnow();
+        startDino();
+    } else {
+        alert("账号或密码错误");
+    }
+}
+
+// 弹窗控制
+function openModal(id) {
+    closeAll();
+    document.getElementById(id).style.display = "flex";
+}
+function closeAll() {
+    document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
+}
+
+// 显示图片
+function showImg(src) {
+    document.getElementById("showPic").src = src;
+    openModal("imgModal");
+}
+
+// 设置
+let snowSize = 2;
+function setSnow(s) { snowSize = s; closeAll(); }
+
+let jumpSpeed = 2;
+function setSpeed(s) { jumpSpeed = s; closeAll(); }
+
+// 雪花
+function startSnow() {
+    setInterval(() => {
+        let f = document.createElement("div");
+        f.className = "flake";
+        let size = snowSize == 1 ? 2 : snowSize == 2 ? 4 : 6;
+        f.style.width = size + "px";
+        f.style.height = size + "px";
+        f.style.left = Math.random() * 100 + "%";
+        f.style.top = "0px";
+        document.getElementById("snow").appendChild(f);
+
+        let fall = setInterval(() => {
+            let t = parseInt(f.style.top);
+            if (t > window.innerHeight) {
+                f.remove();
+                clearInterval(fall);
+            } else {
+                f.style.top = t + 1 + "px";
+            }
+        }, 30);
+    }, 100);
+}
+
+// 恐龙
+function startDino() {
+    let dino = document.getElementById("dino");
+    let isJump = false;
+    let h = 0;
+
+    setInterval(() => {
+        if (!isJump) {
+            isJump = true;
+            h = 0;
+            let up = setInterval(() => {
+                h += 3;
+                dino.style.bottom = h + "px";
+                if (h >= 40) {
+                    clearInterval(up);
+                    let down = setInterval(() => {
+                        h -= 3;
+                        dino.style.bottom = h + "px";
+                        if (h <= 0) {
+                            clearInterval(down);
+                            isJump = false;
+                        }
+                    }, 20 * jumpSpeed);
+                }
+            }, 20 * jumpSpeed);
+        }
+    }, 1000);
+
+    // 障碍物
+    setInterval(() => {
+        if (Math.random() > 0.7) {
+            let o = document.createElement("div");
+            o.className = "obs";
+            o.style.right = "0px";
+            document.querySelector(".dinoBox").appendChild(o);
+
+            let move = setInterval(() => {
+                let r = parseInt(o.style.right);
+                if (r > window.innerWidth) {
+                    o.remove();
+                    clearInterval(move);
+                } else {
+                    o.style.right = r + 3 + "px";
+                }
+            }, 20);
+        }
+    }, 800);
+}
+</script>
+</body>
+</html>
